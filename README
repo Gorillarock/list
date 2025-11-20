@@ -1,0 +1,24 @@
+A simple implementation of a sorted list in Golang.
+
+Allows for 0(n) insertion, removal, and searching.
+
+Examples are available in the main.go file
+
+Node (n):
+- n.Next() : Returns the next linked node.
+- n.Prev() :  Returns the previous linked node.
+
+
+List (l):
+- New(vals ...cmp.Order)      : Returns new List with vals [constrained by type in cmp.Ordered] added.
+- l.Add(vals ...cmp.Order)    : Adds vals to List.
+- l.Find(v t)                 : Returns Node from List which has Val v (or nil).
+- l.Last()                    : Returns last Node from List (or nil).
+- l.Remove(vals ...cmp.Order) : Removes vals from List.
+- l.Size()                    : Returns size of the List.
+- l.Start()                   : Returns first Node from the List (or nil).
+- l.Values()                  : Returns sorted slice of List's Values (for compatibility and ease of use).
+
+
+Planned:
+* O(log n) implementation.
