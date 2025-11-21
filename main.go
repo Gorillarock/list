@@ -47,6 +47,18 @@ func example_usage() {
 	find_print(flts, 5)
 	find_print(flts, flts.Last().Val)
 	find_print(flts, flts.Start().Val)
+
+	// Indexed list example
+	fmt.Printf("\nIndexed List Example:\n")
+	indexedList := list.NewIndexed("red", "blue", "green", "yellow")
+	print_list(indexedList, "\t")
+	find_print(indexedList, "red")
+	fmt.Println("Deleting \"yellow\".")
+	indexedList.Remove("yellow")
+	find_print(indexedList, "yellow")
+	find_print(indexedList, "red")
+	find_print(indexedList, "green")
+	find_print(indexedList, "blue")
 }
 
 func find_print[t cmp.Ordered](l *list.List[t], val t) {

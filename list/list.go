@@ -27,14 +27,21 @@ func (n *Node[t]) Prev() *Node[t] {
 }
 
 type List[t cmp.Ordered] struct {
-	start *Node[t]
-	last  *Node[t]
-	size  int
+	start   *Node[t]
+	last    *Node[t]
+	size    int
+	indexed map[t]*Node[t]
 }
 
 // Creates new List with vals and returns pointer to it.
 func New[t cmp.Ordered](vals ...t) *List[t] {
 	l := new(List[t])
+	return l.Add(vals...)
+}
+
+func NewIndexed[t cmp.Ordered](vals ...t) *List[t] {
+	l := new(List[t])
+	l.indexed = make(map[t]*Node[t])
 	return l.Add(vals...)
 }
 
@@ -54,6 +61,10 @@ func (l *List[t]) Add(vals ...t) *List[t] {
 func (l *List[t]) Find(v t) *Node[t] {
 	if l == nil {
 		return nil
+	}
+
+	if n, ok := l.indexed[v]; ok {
+		return n
 	}
 	for n := l.start; n != nil; n = n.next {
 		if n.Val == v {
@@ -78,6 +89,7 @@ func (l *List[t]) Remove(vals ...t) *List[t] {
 		l = New(o)
 		return l
 	}
+
 	for _, v := range vals {
 		l.remove(v)
 	}
@@ -128,13 +140,30 @@ func (l *List[t]) remove(v t) *List[t] {
 
 	if p != nil {
 		p.next = n
+	} else {
+		l.start = n
 	}
 
 	if n != nil {
 		n.prev = p
+	} else {
+		l.last = p
 	}
 	l.size--
+	delete(l.indexed, v)
 	return l
+}
+
+func insert_before_with_no_previous[t cmp.Ordered](c, n *Node[t]) {
+	c.prev = nil
+	c.next = n
+	n.prev = c
+}
+
+func insert_after_with_no_next[t cmp.Ordered](c, p *Node[t]) {
+	c.next = nil
+	c.prev = p
+	p.next = c
 }
 
 func insert_between[t cmp.Ordered](p, c, n *Node[t]) {
@@ -146,26 +175,30 @@ func insert_between[t cmp.Ordered](p, c, n *Node[t]) {
 	}
 }
 
-func (l *List[t]) add(s t) *List[t] {
+func (l *List[t]) add(s t) *Node[t] {
 	if l == nil {
 		l = new(List[t])
 	}
 
+	c := &Node[t]{Val: s}
 	if l.start == nil {
-		l.start = &Node[t]{Val: s}
+		l.start = c
 		l.last = l.start
 		l.size++
-		return l
+		l.index(c)
+		return c
 	}
 
-	c := &Node[t]{Val: s}
+	if n, ok := l.indexed[s]; ok {
+		return n
+	}
 
 	n := l.start
 
 	p := new(Node[t])
 	for p = n; n != nil; n = n.next {
 		if n.Val == s {
-			return l // don't add again
+			return n // don't add again
 		}
 
 		if n.Val < s {
@@ -175,7 +208,12 @@ func (l *List[t]) add(s t) *List[t] {
 
 		if n.Val > s {
 			// this means that to_add should be added before tw
-			insert_between(p, c, n)
+			switch {
+			case p.Val < n.Val:
+				insert_between(p, c, n)
+			case p.Val == n.Val:
+				insert_before_with_no_previous(c, n)
+			}
 
 			if c.prev == nil {
 				l.start = c
@@ -186,7 +224,8 @@ func (l *List[t]) add(s t) *List[t] {
 			}
 
 			l.size++
-			return l
+			l.index(c)
+			return c
 		}
 	}
 
@@ -196,5 +235,12 @@ func (l *List[t]) add(s t) *List[t] {
 	c.prev = p
 	l.last = c
 	l.size++
-	return l
+	l.index(c)
+	return c
+}
+
+func (l *List[t]) index(n *Node[t]) {
+	if l.indexed != nil {
+		l.indexed[n.Val] = n
+	}
 }

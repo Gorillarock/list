@@ -10,15 +10,23 @@ Node (n):
 
 
 List (l):
-- New(vals ...cmp.Order)      : Returns new List with vals [constrained by type in cmp.Ordered] added.
-- l.Add(vals ...cmp.Order)    : Adds vals to List.
-- l.Find(v t)                 : Returns Node from List which has Val v (or nil).
-- l.Last()                    : Returns last Node from List (or nil).
-- l.Remove(vals ...cmp.Order) : Removes vals from List.
-- l.Size()                    : Returns size of the List.
-- l.Start()                   : Returns first Node from the List (or nil).
-- l.Values()                  : Returns sorted slice of List's Values (for compatibility and ease of use).
+- New(vals ...cmp.Order)           : Returns new List with vals [constrained by type in cmp.Ordered] added. O(n) Find operations.
+        NOTE: - Smallest Memory footprint.
+              - O(n) Find operations.
+              - O(n) Remove operations.
+              - O(n) Add function for duplicate data.
+- NewIndexed(vals ...cmp.Ordered)  : Returns new List (with indexed searching) with vals [constrained by type in cmp.Ordered] added.
+        NOTE: - Double the Memory footprint.
+              - O(1) Find operations.
+              - O(1) Remove Operations.
+              - O(1) Add function called for duplicate.
+- l.Add(vals ...cmp.Order)         : Adds vals to List.
+- l.Find(v t)                      : Returns Node from List which has Val v (or nil).
+- l.Last()                         : Returns last Node from List (or nil).
+- l.Remove(vals ...cmp.Order)      : Removes vals from List.
+- l.Size()                         : Returns size of the List.
+- l.Start()                        : Returns first Node from the List (or nil).
+- l.Values()                       : Returns sorted slice of List's Values (for compatibility and ease of use).
 
 
-Planned:
-* O(log n) implementation.
+
